@@ -32,12 +32,28 @@ jobs:
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
 
+      - name: Build signed release bundle for Google Play
+        env:
+          PW: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          if [ -z "$PW" ] || [ ! -f signing/upload.p12.enc ]; then
+            echo "No upload key yet; skipping the Play bundle."; exit 0
+          fi
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 \
+            -in signing/upload.p12.enc -out "$RUNNER_TEMP/upload.p12" -pass env:PW
+          SIGNING_KEYSTORE="$RUNNER_TEMP/upload.p12" SIGNING_PASSWORD="$PW" \
+            gradle :app:bundleRelease --stacktrace
+          cp app/build/outputs/bundle/release/app-release.aab SonoraPulse-release.aab
+          rm -f "$RUNNER_TEMP/upload.p12"
+
       - name: Publish APK as the "latest" release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp app/build/outputs/apk/debug/app-debug.apk SonoraPulse-debug.apk
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest SonoraPulse-debug.apk \
+          FILES="SonoraPulse-debug.apk"
+          [ -f SonoraPulse-release.aab ] && FILES="$FILES SonoraPulse-release.aab"
+          gh release create latest $FILES \
             --title "SonoraPulse latest build" \
-            --notes "Debug build from ${GITHUB_SHA::7}. Download the APK on your phone and install it."
+            --notes "Debug build from ${GITHUB_SHA::7}. SonoraPulse-debug.apk installs on your phone for testing. SonoraPulse-release.aab (when present) is the signed bundle to upload to Google Play Console."

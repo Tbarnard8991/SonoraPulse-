@@ -17,12 +17,37 @@ android {
         applicationId = "com.sonorapulse.app"
         minSdk = 29          // MediaStore.Downloads needs API 29 (Android 10)
         targetSdk = 36       // Required by Google Play since Aug 31, 2026
-        versionCode = 1
-        versionName = "1.0.0"
+        // Each cloud build gets a higher versionCode, which Google Play requires for every upload.
+        versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
+        versionName = "1.0.${System.getenv("GITHUB_RUN_NUMBER") ?: "0"}"
 
         externalNativeBuild {
             cmake {
                 arguments("-DANDROID_STL=c++_shared")
+            }
+        }
+    }
+
+    // Upload key for Google Play. The cloud build decrypts it into a temp file and passes
+    // its path and password through environment variables; nothing secret lives in this file.
+    val uploadKeystore = System.getenv("SIGNING_KEYSTORE")
+    signingConfigs {
+        if (uploadKeystore != null) {
+            create("upload") {
+                storeFile = file(uploadKeystore)
+                storeType = "pkcs12"
+                storePassword = System.getenv("SIGNING_PASSWORD")
+                keyAlias = "upload"
+                keyPassword = System.getenv("SIGNING_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            if (uploadKeystore != null) {
+                signingConfig = signingConfigs.getByName("upload")
             }
         }
     }
