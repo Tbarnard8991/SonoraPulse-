@@ -83,5 +83,5 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.10.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
-    implementation("com.google.oboe:oboe:1.9.3")
+    implementation("com.google.oboe:oboe:1.11.0")
 }
