@@ -25,3 +25,9 @@ Drop the app/ folder over your Android Studio project's app/ folder.
 - Plug/unplug headphones while capturing: readouts should resume within a second.
 - Background the app, return, tap Start: capture restarts cleanly.
 - Export CSV: file appears in Downloads/SonoraPulse.
+
+## v1.1: free app + one-time Pro unlock
+- Free: live spectrum bars, level meter, start/stop capture.
+- Pro (in-app product `pro_unlock`, one-time): exact peak Hz, spectral centroid, five band dB readouts, CSV export.
+- Google Play Billing 8.3.0: purchase, acknowledge, restore on start/resume, entitlement cached in SharedPreferences.
+- If Play billing or the product isn't available, the app shows "Pro isn't available yet" and keeps working.

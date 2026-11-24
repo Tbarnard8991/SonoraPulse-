@@ -19,7 +19,8 @@ android {
         targetSdk = 36       // Required by Google Play since Aug 31, 2026
         // Each cloud build gets a higher versionCode, which Google Play requires for every upload.
         versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
-        versionName = "1.0.${System.getenv("GITHUB_RUN_NUMBER") ?: "0"}"
+        // 1.1.x = free app with the one-time Pro unlock.
+        versionName = "1.1.${System.getenv("GITHUB_RUN_NUMBER") ?: "0"}"
 
         externalNativeBuild {
             cmake {
@@ -84,4 +85,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
     implementation("com.google.oboe:oboe:1.11.0")
+    // Google Play Billing for the one-time "pro_unlock" in-app product.
+    implementation("com.android.billingclient:billing:8.3.0")
 }

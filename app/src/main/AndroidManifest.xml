@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Also merged in by the Play Billing library; declared here so it's explicit. -->
+    <uses-permission android:name="com.android.vending.BILLING" />
     <uses-feature android:name="android.hardware.microphone" android:required="true" />
 
     <application
